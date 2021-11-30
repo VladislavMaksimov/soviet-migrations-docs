@@ -11,6 +11,7 @@ CREATE TABLE `migrants` (
   `home_before_migration_id` int,
   `home_after_migration_id` int,
   `occupation_before_migration_id` int,
+  `occupation_after_migration_id` int,
   `migrant_type_id` int,
   `was_in_party` boolean,
   `why_was_added` varchar(255)
@@ -29,10 +30,8 @@ CREATE TABLE `sources` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `archive_id` int,
   `date` date,
-  `fund_id` int,
-  `inventory_id` int,
-  `file_id` int,
-  `number_of_sheets` smallint
+  `number_of_sheets` smallint,
+  `file_id` int
 );
 
 CREATE TABLE `media_content` (
@@ -81,7 +80,7 @@ CREATE TABLE `publications` (
   `page_from` smallint,
   `page_to` smallint,
   `language_id` int,
-  `link` varchar(255),
+  `url` varchar(255),
   `storage_id` int
 );
 
@@ -167,7 +166,8 @@ CREATE TABLE `c_insitutions_media_content` (
 
 CREATE TABLE `c_institutions_migrations` (
   `institution_id` int,
-  `migration_id` int
+  `migration_id` int,
+  `institution_migration_function_id` int
 );
 
 CREATE TABLE `family_members` (
@@ -195,6 +195,11 @@ CREATE TABLE `ethnicities` (
   `name` varchar(255)
 );
 
+CREATE TABLE `occupations` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(255)
+);
+
 CREATE TABLE `places` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255)
@@ -212,19 +217,22 @@ CREATE TABLE `event_types` (
 
 CREATE TABLE `funds` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `fund_number` int,
+  `number` int,
   `fund_name` varchar(255)
 );
 
 CREATE TABLE `inventories` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `name` varchar(255)
+  `name` varchar(255),
+  `number` int,
+  `fund_id` int
 );
 
 CREATE TABLE `files` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `file_number` int,
-  `file_name` varchar(255)
+  `number` int,
+  `file_name` varchar(255),
+  `inventory_id` int
 );
 
 CREATE TABLE `media_content_authors` (
@@ -304,6 +312,16 @@ CREATE TABLE `literature` (
   `name` varchar(255)
 );
 
+CREATE TABLE `archives` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(255)
+);
+
+CREATE TABLE `institution_migration_functions` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(255)
+);
+
 ALTER TABLE `migrants` ADD FOREIGN KEY (`social_status_id`) REFERENCES `social_statuses` (`id`);
 
 ALTER TABLE `migrants` ADD FOREIGN KEY (`family_member_id`) REFERENCES `family_members` (`id`);
@@ -314,6 +332,10 @@ ALTER TABLE `migrants` ADD FOREIGN KEY (`religion_id`) REFERENCES `religions` (`
 
 ALTER TABLE `migrants` ADD FOREIGN KEY (`ethnicity_id`) REFERENCES `ethnicities` (`id`);
 
+ALTER TABLE `migrants` ADD FOREIGN KEY (`occupation_before_migration_id`) REFERENCES `occupations` (`id`);
+
+ALTER TABLE `migrants` ADD FOREIGN KEY (`occupation_after_migration_id`) REFERENCES `occupations` (`id`);
+
 ALTER TABLE `migrants` ADD FOREIGN KEY (`home_before_migration_id`) REFERENCES `places` (`id`);
 
 ALTER TABLE `migrants` ADD FOREIGN KEY (`home_after_migration_id`) REFERENCES `places` (`id`);
@@ -322,9 +344,7 @@ ALTER TABLE `migrants` ADD FOREIGN KEY (`migrant_type_id`) REFERENCES `migrant_t
 
 ALTER TABLE `events` ADD FOREIGN KEY (`event_type_id`) REFERENCES `event_types` (`id`);
 
-ALTER TABLE `sources` ADD FOREIGN KEY (`fund_id`) REFERENCES `funds` (`id`);
-
-ALTER TABLE `sources` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventories` (`id`);
+ALTER TABLE `sources` ADD FOREIGN KEY (`archive_id`) REFERENCES `archives` (`id`);
 
 ALTER TABLE `sources` ADD FOREIGN KEY (`file_id`) REFERENCES `files` (`id`);
 
@@ -423,6 +443,12 @@ ALTER TABLE `c_insitutions_media_content` ADD FOREIGN KEY (`media_content_id`) R
 ALTER TABLE `c_institutions_migrations` ADD FOREIGN KEY (`institution_id`) REFERENCES `institutions` (`id`);
 
 ALTER TABLE `c_institutions_migrations` ADD FOREIGN KEY (`migration_id`) REFERENCES `migrations` (`id`);
+
+ALTER TABLE `c_institutions_migrations` ADD FOREIGN KEY (`institution_migration_function_id`) REFERENCES `institution_migration_functions` (`id`);
+
+ALTER TABLE `inventories` ADD FOREIGN KEY (`fund_id`) REFERENCES `funds` (`id`);
+
+ALTER TABLE `files` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventories` (`id`);
 
 ALTER TABLE `scientific_publications` ADD FOREIGN KEY (`scientific_publication_type_id`) REFERENCES `scientific_publication_types` (`id`);
 
