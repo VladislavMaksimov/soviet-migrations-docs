@@ -5,3 +5,4 @@
 *.vpp.bak*
 *.lock
 tmp/*
+*.tmp
