@@ -170,6 +170,11 @@ CREATE TABLE `c_institutions_migrations` (
   `institution_migration_function_id` int
 );
 
+CREATE TABLE `c_publications_publication_sources` (
+  `publication_id` int,
+  `pub_source_id` int
+);
+
 CREATE TABLE `family_members` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255)
@@ -322,6 +327,11 @@ CREATE TABLE `institution_migration_functions` (
   `name` varchar(255)
 );
 
+CREATE TABLE `publication_sources` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(255)
+);
+
 ALTER TABLE `migrants` ADD FOREIGN KEY (`social_status_id`) REFERENCES `social_statuses` (`id`);
 
 ALTER TABLE `migrants` ADD FOREIGN KEY (`family_member_id`) REFERENCES `family_members` (`id`);
@@ -445,6 +455,10 @@ ALTER TABLE `c_institutions_migrations` ADD FOREIGN KEY (`institution_id`) REFER
 ALTER TABLE `c_institutions_migrations` ADD FOREIGN KEY (`migration_id`) REFERENCES `migrations` (`id`);
 
 ALTER TABLE `c_institutions_migrations` ADD FOREIGN KEY (`institution_migration_function_id`) REFERENCES `institution_migration_functions` (`id`);
+
+ALTER TABLE `c_publications_publication_sources` ADD FOREIGN KEY (`publication_id`) REFERENCES `publications` (`id`);
+
+ALTER TABLE `c_publications_publication_sources` ADD FOREIGN KEY (`pub_source_id`) REFERENCES `publication_sources` (`id`);
 
 ALTER TABLE `inventories` ADD FOREIGN KEY (`fund_id`) REFERENCES `funds` (`id`);
 
